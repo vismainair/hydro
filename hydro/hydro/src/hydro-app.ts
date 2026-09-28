@@ -12,9 +12,10 @@ export class HydroApp extends LitElement {
       display: block;
       position: relative;
       min-height: 100vh;
+      margin: 0px;
     }
 
-    /* 1. Full-height background lanes for 6 columns */
+    /* 1. Full-height background lanes for 8 columns */
     .column-lanes {
       position: absolute;
       top: 0;
@@ -22,9 +23,10 @@ export class HydroApp extends LitElement {
       right: 0;
       bottom: 0;
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
+      grid-template-columns: repeat(8, 1fr);
       pointer-events: none; /* Allows clicks to pass through to textareas */
       z-index: 0;
+      margin: 0px;
     }
 
     .column-lane:nth-child(odd) {
@@ -46,7 +48,7 @@ export class HydroApp extends LitElement {
 
     .row {
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
+      grid-template-columns: repeat(8, 1fr);
       gap: 0;
       padding: 0;
       align-items: start;
@@ -64,7 +66,7 @@ export class HydroApp extends LitElement {
 
   private handleAddBoxInRow(rowIndex: number) {
     const newRows = [...this.rows];
-    if (newRows[rowIndex].length < 6) {
+    if (newRows[rowIndex].length < 8) {
       newRows[rowIndex] = [...newRows[rowIndex], ''];
       this.rows = newRows;
     }
@@ -90,6 +92,8 @@ export class HydroApp extends LitElement {
     <dialog-box>Hello World from a dialog</dialog-box>
       <!-- Full-height vertical column background lanes -->
       <div class="column-lanes">
+        <div class="column-lane"></div>
+        <div class="column-lane"></div>
         <div class="column-lane"></div>
         <div class="column-lane"></div>
         <div class="column-lane"></div>
