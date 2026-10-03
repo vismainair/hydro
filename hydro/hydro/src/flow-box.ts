@@ -28,8 +28,7 @@ export class FlowBox extends LitElement {
     border-width: 0.5px;
   }
   `
-  @property({ type: String })
-  title = ''
+
   private handleInput(e: Event) {
     const textarea = e.target as HTMLTextAreaElement;
     
@@ -43,10 +42,11 @@ export class FlowBox extends LitElement {
   private isEmpty(): boolean {
     if (this.flowbox && this.flowbox.value.trim()) {
       return false
-    } else {
-      return true;
     }
+
+    return true
   }
+
   private handleKeyDown(e: KeyboardEvent) {
     // check if enter & not shift
     if (e.key === 'Enter' && !e.shiftKey) {
