@@ -1,11 +1,9 @@
 import { LitElement, html, css } from 'lit';
-import { property, state, customElement } from 'lit/decorators.js';
+import {  state, customElement } from 'lit/decorators.js';
 import './flow-box.js';
 
 @customElement('hydro-app')
 export class HydroApp extends LitElement {
-  @property({ type: String })
-  title = '';
 
   static styles = css`
     :host {
