@@ -1,0 +1,20 @@
+# 1. Hide dependencies & generated lock files from language stats
+package-lock.json linguist-generated=true
+
+# 2. Mark configuration and setup files as documentation/tooling
+*.config.js linguist-documentation
+tsconfig.json linguist-documentation
+wrangler.jsonc linguist-documentation
+.editorconfig linguist-documentation
+
+# 3. Mark third-party or static assets as vendored
+assets/* linguist-vendored
+assets/**/* linguist-vendored
+
+# 4. Hide test and storybook files from primary language stats
+stories/* linguist-documentation
+stories/**/* linguist-documentation
+test/* linguist-documentation
+test/**/* linguist-documentation
+.storybook/* linguist-documentation
+.storybook/**/* linguist-documentation
