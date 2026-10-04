@@ -1,120 +1,149 @@
-import { LitElement, html, css } from 'lit';
-import {  state, customElement } from 'lit/decorators.js';
+/* eslint-disable class-methods-use-this */
+import { LitElement, html, css, TemplateResult } from 'lit';
+import { customElement } from 'lit/decorators.js';
+import { repeat } from 'lit/directives/repeat.js';
+import { SignalWatcher } from '@lit-labs/signals';
+import {
+  tree,
+  updateText,
+  addChild,
+  addSibling,
+  removeBox,
+  FlowBox,
+} from './flow.store.js';
 import './flow-box.js';
 
-@customElement('hydro-app')
-export class HydroApp extends LitElement {
+const numberColumns = 6;
 
+@customElement('hydro-app')
+export class HydroApp extends SignalWatcher(LitElement) {
   static styles = css`
     :host {
       display: block;
-      position: relative;
       min-height: 100vh;
-      margin: 0px;
+      font-family: system-ui, sans-serif;
+      padding: 0;
+      box-sizing: border-box;
+      background-color: #f0f0f0;
+      color: #333;
+      padding: 2rem;
     }
 
-    /* 1. Full-height background lanes for 8 columns */
-    .column-lanes {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      display: grid;
-      grid-template-columns: repeat(8, 1fr);
-      pointer-events: none; /* Allows clicks to pass through to textareas */
-      z-index: 0;
-      margin: 0px;
-    }
-
-    .column-lane:nth-child(odd) {
-      background-color: #eff6ff;
-    }
-
-    .column-lane:nth-child(even) {
-      background-color: #fff6ee;
-    }
-
-    /* 2. Container for debate rows placed over the lanes */
-    .rows-container {
-      position: relative;
-      z-index: 1;
+    /* Root container for top-level nodes */
+    .tree-root {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 0;
+      margin: 1rem;
+      padding: 0;
+      width: 100%;
     }
 
-    .row {
-      display: grid;
-      grid-template-columns: repeat(8, 1fr);
-      gap: 0;
+    /* Each node row: parent box on left, children column on right */
+    .node-row {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch; /* Stretches parent cell to match children height */
+      margin: 0;
       padding: 0;
-      align-items: start;
+      width: 100%;
+    }
+
+    /* Container for the individual node cell locked to exact column width */
+    .node-cell {
+      flex: 0 0 calc(100vw / ${numberColumns});
+      width: calc(100vw / ${numberColumns});
+      min-width: 0; /* Prevents flex items from overflowing */
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Container stacking direct children vertically in the next columns */
+    .node-children {
+      display: flex;
+      flex: 1; /* Takes up the remaining available column space */
+      flex-direction: column;
+      gap: 0;
+      margin: 0;
+      padding: 0;
+    }
+
+    flow-box {
+      display: block;
+      height: 100%;
+      width: 100%;
+      box-sizing: border-box;
     }
   `;
 
-  @state()
-  private rows: string[][] = [['']];
+  /**
+   * Recursively renders a node and its children sub-tree.
+   */
+  private renderNode(node: FlowBox): TemplateResult {
+    const hasChildren =
+      Array.isArray(node.children) && node.children.length > 0;
 
-  private handleAddRow(rowIndex: number) {
-    const newRows = [...this.rows];
-    newRows.splice(rowIndex + 1, 0, ['']);
-    this.rows = newRows;
+    return html`
+      <div class="node-row">
+        <!-- Parent Box -->
+        <div class="node-cell">
+          <flow-box .id=${node.id} .text=${node.text}></flow-box>
+        </div>
+
+        <!-- Children Column -->
+        ${
+          hasChildren
+            ? html`
+                <div class="node-children">
+                  ${repeat(
+                    node.children,
+                    child => child.id,
+                    child => this.renderNode(child),
+                  )}
+                </div>
+              `
+            : ''
+        }
+      </div>
+    `;
   }
 
-  private handleAddBoxInRow(rowIndex: number) {
-    const newRows = [...this.rows];
-    if (newRows[rowIndex].length < 8) {
-      newRows[rowIndex] = [...newRows[rowIndex], ''];
-      this.rows = newRows;
-    }
-  }
+  private handleUpdateText = (e: CustomEvent<{ id: string; text: string }>) => {
+    updateText(e.detail.id, e.detail.text);
+  };
 
-  private handleRemoveBox(rowIndex: number, colIndex: number) {
-    const newRows = [...this.rows];
-    newRows[rowIndex].splice(colIndex, 1);
+  private handleAddChild = (e: CustomEvent<{ id: string }>) => {
+    addChild(e.detail.id);
+  };
 
-    if (newRows[rowIndex].length === 0) {
-      if (newRows.length > 1) {
-        newRows.splice(rowIndex, 1);
-      } else {
-        newRows[0] = [''];
-      }
-    }
+  private handleAddSibling = (e: CustomEvent<{ id: string }>) => {
+    addSibling(e.detail.id);
+  };
 
-    this.rows = newRows;
-  }
+  private handleRemoveBox = (e: CustomEvent<{ id: string }>) => {
+    removeBox(e.detail.id);
+  };
 
   render() {
-    return html`
-    <dialog-box>Hello World from a dialog</dialog-box>
-      <!-- Full-height vertical column background lanes -->
-      <div class="column-lanes">
-        <div class="column-lane"></div>
-        <div class="column-lane"></div>
-        <div class="column-lane"></div>
-        <div class="column-lane"></div>
-        <div class="column-lane"></div>
-        <div class="column-lane"></div>
-        <div class="column-lane"></div>
-        <div class="column-lane"></div>
-      </div>
+    const currentTree = tree.get();
 
-      <!-- Foreground interactive rows -->
-      <div class="rows-container">
-        ${this.rows.map((row, rIndex) => html`
-          <div class="row">
-            ${row.map((_, cIndex) => html`
-              <flow-box
-                style="grid-column: ${cIndex + 1}"
-                col-index=${cIndex}
-                @add-row=${() => this.handleAddRow(rIndex)}
-                @add-box-in-row=${() => this.handleAddBoxInRow(rIndex)}
-                @remove-box=${() => this.handleRemoveBox(rIndex, cIndex)}
-              ></flow-box>
-            `)}
-          </div>
-        `)}
+    return html`
+      <nav-bar></nav-bar>
+      <div
+        class="tree-root"
+        @update-text=${this.handleUpdateText}
+        @add-child=${this.handleAddChild}
+        @add-sibling=${this.handleAddSibling}
+        @remove-box=${this.handleRemoveBox}
+      >
+        ${repeat(
+          currentTree,
+          node => node.id,
+          node => this.renderNode(node),
+        )}
       </div>
     `;
   }

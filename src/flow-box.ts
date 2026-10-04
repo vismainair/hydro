@@ -1,87 +1,127 @@
 import { LitElement, html, css } from 'lit';
-import { customElement, query } from 'lit/decorators.js';
+import { customElement, query, property } from 'lit/decorators.js';
 
 @customElement('flow-box')
-
 export class FlowBox extends LitElement {
-  @query('.flow-box') 
+  // Pass down the unique identification and text from the state tree
+  // eslint-disable-next-line lit/no-native-attributes
+  @property({ type: String }) id = '';
+
+  @property({ type: String }) text = '';
+
+  @query('.flow-box')
   flowbox!: HTMLTextAreaElement;
 
   static styles = css`
-  :host {
-    display: block;
+    :host {
+      display: block;
+      min-height: 2.5rem;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    .flow-box {
+      text-align: left;
+      vertical-align: top;
+      line-height: normal;
+      overflow-y: hidden;
+      resize: none;
+      box-sizing: border-box;
+      border-radius: 0.25em;
+      padding: 1em;
+      margin: 0em;
+      width: 100%;
+      background-color: transparent;
+      border-width: 0.5px;
+      border-style: solid;
+      font-family: inherit;
+      min-height: 1rem;
+    }
+  `;
+
+  firstUpdated() {
+    this.adjustHeight();
   }
 
-  .flow-box {
-    text-align: left;
-    vertical-align: top;
-    line-height: normal;
-    overflow-y: hidden;
-    resize: none;
-    box-sizing: border-box;
-    border-radius: 0.5em;
-    padding: 1em;
-    height: auto;
-    margin: 0em;
-    background-color: transparent;
-    width: 100%;
-    border-width: 0.5px;
+  updated() {
+    this.adjustHeight();
   }
-  `
+
+  private adjustHeight() {
+    if (this.flowbox) {
+      this.flowbox.style.height = 'auto';
+      this.flowbox.style.height = `${this.flowbox.scrollHeight}px`;
+    }
+  }
 
   private handleInput(e: Event) {
     const textarea = e.target as HTMLTextAreaElement;
-    
-    // Reset height to auto first so it can shrink when text is deleted
-    textarea.style.height = 'auto';
-    
-    // Set height to match the internal content scroll height
-    textarea.style.height = `${textarea.scrollHeight}px`;
+
+    // Auto-expand/shrink textarea height mechanics
+    this.adjustHeight();
+
+    // Fire text changes back up to the state tree store
+    this.dispatchEvent(
+      new CustomEvent('update-text', {
+        detail: { id: this.id, text: textarea.value },
+        bubbles: true,
+        composed: true,
+      }),
+    );
   }
 
   private isEmpty(): boolean {
-    if (this.flowbox && this.flowbox.value.trim()) {
-      return false
-    }
-
-    return true
+    return !(this.flowbox && this.flowbox.value.trim());
   }
 
   private handleKeyDown(e: KeyboardEvent) {
-    // check if enter & not shift
     if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault(); // prevents the textarea from just making a new line
-      
+      e.preventDefault();
+
       if (e.ctrlKey || e.metaKey) {
-        // Ctrl + Enter: add box to current row
-        this.dispatchEvent(new CustomEvent('add-box-in-row', {
-          bubbles: true,
-          composed: true
-        }));
-      } else if (!e.shiftKey) {
-        // Enter alone (no shirft): Add a new row below
-        this.dispatchEvent(new CustomEvent('add-row', {
-          bubbles: true,
-          composed: true
-        }));
+        // Ctrl + Enter: add a sibling node next to this box
+        this.dispatchEvent(
+          new CustomEvent('add-child', {
+            detail: { id: this.id },
+            bubbles: true,
+            composed: true,
+          }),
+        );
+      } else {
+        // Enter alone: Add a child node down a generation
+        this.dispatchEvent(
+          new CustomEvent('add-sibling', {
+            detail: { id: this.id },
+            bubbles: true,
+            composed: true,
+          }),
+        );
       }
     }
 
-    if (e.key === "Backspace" && this.isEmpty() === true) {
+    if (e.key === 'Backspace' && this.isEmpty()) {
       e.preventDefault();
 
-      this.dispatchEvent(new CustomEvent('remove-box', {
-        bubbles: true,
-        composed: true,
-      }))
+      this.dispatchEvent(
+        new CustomEvent('remove-box', {
+          detail: { id: this.id },
+          bubbles: true,
+          composed: true,
+        }),
+      );
     }
   }
 
   render() {
+    // Explicitly bind the value attribute to the reactive text property
     return html`
-      <textarea class="flow-box" @input=${this.handleInput} @keydown=${this.handleKeyDown}>
-      </textarea>
+      <textarea
+        class="flow-box"
+        .value=${this.text}
+        @input=${this.handleInput}
+        @keydown=${this.handleKeyDown}
+      ></textarea>
     `;
   }
 }
-
