@@ -15,28 +15,44 @@ export class FlowBox extends LitElement {
   static styles = css`
     :host {
       display: block;
-      min-height: 2.5rem;
       width: 100%;
       margin: 0;
       padding: 0;
     }
 
     .flow-box {
+      line-height: 1;
+      height: 1rem;
       text-align: left;
       vertical-align: top;
       line-height: normal;
       overflow-y: hidden;
       resize: none;
       box-sizing: border-box;
-      border-radius: 0.25em;
-      padding: 1em;
       margin: 0em;
       width: 100%;
       background-color: transparent;
       border-width: 0.5px;
       border-style: solid;
+      border-top: 0;
+      border-left: 0;
+      border-right: 0;
+      border-bottom: 0.5px solid var(--text-color);
       font-family: inherit;
-      min-height: 1rem;
+      outline: none;
+      color: var(--text-color);
+      font-family: var(--font-face);
+    }
+
+    .flow-box:active,
+    .flow-box:focus {
+      border-bottom: 2px solid var(--text-color);
+    }
+
+    @starting-style {
+      .flow-box {
+        height: 1rem;
+      }
     }
   `;
 
@@ -117,6 +133,7 @@ export class FlowBox extends LitElement {
     // Explicitly bind the value attribute to the reactive text property
     return html`
       <textarea
+        placeholder="Type here..."
         class="flow-box"
         .value=${this.text}
         @input=${this.handleInput}

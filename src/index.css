@@ -1,0 +1,8 @@
+:root {
+    /* Typography */
+    --text-color: oklch(0.9 0.00172 16.824);
+    --background-color: oklch(0.25 0 0);
+    --accent-color: oklch(0.630 0.180 260);
+    --md-sys-color-primary: var(--accent-color);
+    --font-face: 'Source Sans 3', sans-serif;
+}

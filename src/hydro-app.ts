@@ -12,6 +12,8 @@ import {
   FlowBox,
 } from './flow.store.js';
 import './flow-box.js';
+import './nav-bar.js';
+import './dialog-box.js';
 
 const numberColumns = 6;
 
@@ -21,12 +23,16 @@ export class HydroApp extends SignalWatcher(LitElement) {
     :host {
       display: block;
       min-height: 100vh;
-      font-family: system-ui, sans-serif;
+      font-family: var(--font-face);
       padding: 0;
       box-sizing: border-box;
-      background-color: #f0f0f0;
-      color: #333;
+      background-color: var(--background-color);
+      color: var(--text-color);
       padding: 2rem;
+    }
+
+    nav-bar {
+      height: 10vh;
     }
 
     /* Root container for top-level nodes */
@@ -45,6 +51,7 @@ export class HydroApp extends SignalWatcher(LitElement) {
       flex-direction: row;
       align-items: stretch; /* Stretches parent cell to match children height */
       margin: 0;
+      margin-bottom: 1rem;
       padding: 0;
       width: 100%;
     }
@@ -53,7 +60,6 @@ export class HydroApp extends SignalWatcher(LitElement) {
     .node-cell {
       flex: 0 0 calc(100vw / ${numberColumns});
       width: calc(100vw / ${numberColumns});
-      min-width: 0; /* Prevents flex items from overflowing */
       margin: 0;
       padding: 0;
       box-sizing: border-box;
