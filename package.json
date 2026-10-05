@@ -59,7 +59,8 @@
     "rollup-plugin-workbox": "^8.1.0",
     "storybook": "^7.6.20",
     "tslib": "^2.6.3",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.3",
+    "wrangler": "^4.147.0"
   },
   "eslintConfig": {
     "parser": "@typescript-eslint/parser",

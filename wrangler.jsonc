@@ -1,5 +1,11 @@
 {
-  "assets": {
-    "directory": "dist",
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "hydro",
+  "compatibility_date": "2026-10-01",
+  "observability": {
+    "enabled": true
   },
+  "assets": {
+    "directory": "dist"
+  }
 }
