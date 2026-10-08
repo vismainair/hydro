@@ -59,7 +59,7 @@ export class NavBar extends LitElement {
       animation: glassmorphism linear both;
       will-change: background-color, backdrop-filter;
       animation-timeline: scroll(root);
-      animation-range: 0px 80px; /* Adjust length: fades in fully over the first 80px of scrolling */
+      animation-range: 0px 33vh;
       z-index: 1000;
     }
   `;
