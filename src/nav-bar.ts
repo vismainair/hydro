@@ -56,9 +56,8 @@ export class NavBar extends LitElement {
       justify-content: space-between;
       color: var(--text-color);
       border-bottom: 1px solid var(--text-color);
-      z-index: 1000;
-      will-change: background-color, backdrop-filter;
       animation: glassmorphism linear both;
+      will-change: background-color, backdrop-filter;
       animation-timeline: scroll(root);
       animation-range: 0px 80px; /* Adjust length: fades in fully over the first 80px of scrolling */
       z-index: 1000;
