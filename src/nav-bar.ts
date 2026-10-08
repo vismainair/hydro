@@ -32,14 +32,6 @@ export class NavBar extends LitElement {
       margin: 0;
     }
 
-    md-outlined-icon-button {
-      --md-outlined-icon-button-icon-color: var(--text-color);
-      --md-outlined-icon-button-hover-icon-color: var(--text-color);
-      --md-outlined-icon-button-focus-icon-color: var(--text-color);
-      --md-outlined-icon-button-active-icon-color: var(--text-color);
-      margin: 0.3vw;
-    }
-
     @keyframes glassmorphism {
       from {
         background-color: transparent;
@@ -64,8 +56,8 @@ export class NavBar extends LitElement {
       justify-content: space-between;
       color: var(--text-color);
       border-bottom: 1px solid var(--text-color);
-
-      /* Bind the animation to the root scroll progress */
+      z-index: 1000;
+      will-change: background-color, backdrop-filter;
       animation: glassmorphism linear both;
       animation-timeline: scroll(root);
       animation-range: 0px 80px; /* Adjust length: fades in fully over the first 80px of scrolling */
