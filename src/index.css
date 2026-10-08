@@ -5,4 +5,13 @@
     --accent-color: oklch(0.630 0.180 260);
     --md-sys-color-primary: var(--accent-color);
     --font-face: 'Source Sans 3', sans-serif;
+    --animation-duration: 0.3s;
+    --blur-amount: 8px;
+
+    --md-outlined-icon-button-icon-color: var(--text-color);
+    --md-outlined-icon-button-hover-icon-color: var(--text-color);
+    --md-outlined-icon-button-focus-icon-color: var(--text-color);
+    --md-outlined-icon-button-active-icon-color: var(--text-color);
 }
+
+     

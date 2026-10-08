@@ -13,12 +13,11 @@ export class DialogBox extends LitElement {
     }
 
     dialog {
-      border: 2px solid rgba(255, 255, 255, 0.7);
+      border: 2px solid var(--text-color);
       border-radius: 16px;
       padding: 2rem;
       background: rgba(255, 255, 255, 0.25);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: calc(var(--blur-amount) * 1.5);
       box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
       max-width: 67vw;
       max-height: 67vh;
@@ -32,10 +31,10 @@ export class DialogBox extends LitElement {
       /* 1. Closed/Initial state & transition setup */
       opacity: 0;
       transition:
-        opacity 0.2s ease-in-out,
-        transform 0.2s ease-in-out,
-        display 0.2s allow-discrete,
-        overlay 0.2s allow-discrete;
+        opacity var(--animation-duration) ease-in-out,
+        transform var(--animation-duration) ease-in-out,
+        display var(--animation-duration) allow-discrete,
+        overlay var(--animation-duration) allow-discrete;
     }
 
     /* 2. Open state */
@@ -53,24 +52,16 @@ export class DialogBox extends LitElement {
     /* Backdrop styling & transition */
     dialog::backdrop {
       background-color: rgba(0, 0, 0, 0);
-      backdrop-filter: blur(0px);
       transition:
-        background-color 0.2s ease,
-        backdrop-filter 0.2s ease,
-        display 0.2s allow-discrete,
-        overlay 0.2s allow-discrete;
+        background-color var(--animation-duration) ease,
+        backdrop-filter var(--animation-duration) ease,
+        display var(--animation-duration) allow-discrete,
+        overlay var(--animation-duration) allow-discrete;
     }
 
     dialog[open]::backdrop {
       background-color: rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(8px);
-    }
-
-    @starting-style {
-      dialog[open]::backdrop {
-        background-color: rgba(0, 0, 0, 0);
-        backdrop-filter: blur(0px);
-      }
+      backdrop-filter: blur(var(--blur-amount));
     }
 
     md-icon {
