@@ -10,7 +10,7 @@ import {
   addSibling,
   removeBox,
   FlowBox,
-} from './flow.store.js';
+} from './../store/flow.store.js';
 import './flow-box.js';
 import './nav-bar.js';
 import './dialog-box.js';
